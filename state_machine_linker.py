@@ -44,12 +44,12 @@ def get_string_project(path_to_state_machine):
     return string_project
 
 
-def get_num_types_for_element(num_raise_for_type):
-    num_types_for_element = []
-    for list_type in num_raise_for_type:
-        num_types_for_element.append(len(list_type))
-
-    return num_types_for_element
+#def get_num_types_for_element(num_raise_for_type):
+#    num_types_for_element = []
+#    for list_type in num_raise_for_type:
+#        num_types_for_element.append(len(list_type))
+#
+#    return num_types_for_element
 
 
 
@@ -145,7 +145,7 @@ def merge_lists(list_of_lists):
 
 
 
-def build_fill_functions(fout, list_element_types, num_types_for_element, num_raise_for_type, path_file_out, list_state_machine_names):
+def build_fill_functions(fout, list_element_types, num_raise_for_type, path_file_out, list_state_machine_names):
 
     num_element_types = len(list_element_types)
 
@@ -279,9 +279,9 @@ def build_header_file(fout, list_element_types, path_file_out, files_h_to_compil
 def build_files(fout, fheader, list_element_types, path_topology, list_directory_to_check, path_file_out):
 
     num_raise_for_type, files_c_to_compile, files_h_to_compile, list_state_machine_names = get_elements_state_machine(path_topology, list_directory_to_check)
-    num_types_for_element = get_num_types_for_element(num_raise_for_type)
+    #num_types_for_element = get_num_types_for_element(num_raise_for_type)
 
-    build_fill_functions(fout, list_element_types, num_types_for_element, num_raise_for_type, path_file_out, list_state_machine_names)
+    build_fill_functions(fout, list_element_types, num_raise_for_type, path_file_out, list_state_machine_names)
 
     build_header_file(fheader, list_element_types, path_file_out, files_h_to_compile)
 
