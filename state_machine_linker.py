@@ -107,10 +107,10 @@ def build_fill_functions(fout, list_element_types, num_types_for_element, num_ra
         final_string += "\tref_raise_ptr[" + str(list_element_types[i]) + "] = malloc(sizeof( void (**)() ) * " + str(num_types_for_element[i]) + ");\n"
 
         for j in range(0, num_types_for_element[i]):
-            final_string += "\tref_raise_ptr[" + str(list_element_types[i]) + "]" + "[" + str(j) + "]" + " = malloc(sizeof( void (*)() ) * " + str(len(num_raise_for_type[i])) + ");\n"
+            final_string += "\tref_raise_ptr[" + str(list_element_types[i]) + "]" + "[" + str(j) + "]" + " = malloc(sizeof( void (*)() ) * " + str(len(num_raise_for_type[i][j])) + ");\n"
 
-            for k in range(0, len(num_raise_for_type[i])):
-                final_string += "\tref_raise_ptr[" + str(list_element_types[i]) + "]" + "[" + str(j) + "]" + "[" + str(k) + "]" + " = " + num_raise_for_type[i][k] + ";\n"
+            for k in range(0, len(num_raise_for_type[i][j])):
+                final_string += "\tref_raise_ptr[" + str(list_element_types[i]) + "]" + "[" + str(j) + "]" + "[" + str(k) + "]" + " = " + num_raise_for_type[i][j][k] + ";\n"
 
         final_string += "\n"
 
@@ -123,8 +123,7 @@ def build_fill_functions(fout, list_element_types, num_types_for_element, num_ra
 
 def build_file_c(fout, events_names, list_element_types, string_project):
     num_types_for_element = [1, 2, 1, 2, 3, 5]
-    #questa lista è sbagliata. Dovrebbe essere una lista di funzioni per ogni tipo (una lista di liste di liste di nomi-funzione), non una lista di un numero pari al numero di tipi per elemento 
-    num_raise_for_type = [["raise0"], ["raise0", "raise1"], ["raise0"], ["raise0", "raise1"], ["raise0", "raise1", "raise2"], ["raise0", "raise1", "raise2", "raise3", "raise4"]]
+    num_raise_for_type = [[["raise0", "raise1"]], [["raise0", "raise1"], ["raise0", "raise1"]], [["raise0"]], [["raise0", "raise1"], ["raise0"]], [["raise0", "raise1", "raise2"], ["raise0"], ["raise0"]], [["raise0", "raise1", "raise2", "raise3", "raise4"], ["raise0"], ["raise0"], ["raise0"], ["raise0"]]]
     build_fill_functions(fout, list_element_types, num_types_for_element, num_raise_for_type, string_project)
 
 
