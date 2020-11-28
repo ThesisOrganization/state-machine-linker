@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "linking.h"
 
 
 void funzione1(int intero, int value){
@@ -13,7 +14,10 @@ void funzione2(int intero, int value){
 
 //void (* global_ptr[7][2])();
 
+void (** init_ptr[NUM_OF_ELEMENTS_TYPES])();
+void (*** raise_ptr[NUM_OF_ELEMENTS_TYPES])();
 
+/*
 typedef enum _element_type{
     CENTRAL = 0,
 	REGIONAL,
@@ -24,8 +28,6 @@ typedef enum _element_type{
     NUM_OF_ELEMENTS_TYPES
 } element_type;
 
-void (** init_ptr[NUM_OF_ELEMENTS_TYPES])();
-void (*** raise_ptr[NUM_OF_ELEMENTS_TYPES])();
 
 
 #define NUM_TYPES_FOR_CENTRAL 2
@@ -51,22 +53,25 @@ void fill_raise_ptr( void(**** ref_raise_ptr)() ){
 
 }
 
+*/
+
+
 int main(){
 
 
     fill_init_ptr(init_ptr);
     fill_raise_ptr(raise_ptr);
-    
-    int type0 = 0;
-    int type1 = 1;
-    
-    init_ptr[CENTRAL][type0](3, 4);
-    init_ptr[CENTRAL][type1](2, 8);
 
-    int event0 = 0;
+    //int type0 = 0;
+    //int type1 = 1;
+    //
+    //init_ptr[CENTRAL][type0](3, 4);
+    //init_ptr[CENTRAL][type1](2, 8);
 
-    raise_ptr[CENTRAL][type0][event0](8, 9);
-    raise_ptr[CENTRAL][type1][event0](1, 6);
+    //int event0 = 0;
+
+    //raise_ptr[CENTRAL][type0][event0](8, 9);
+    //raise_ptr[CENTRAL][type1][event0](1, 6);
 
 
 }

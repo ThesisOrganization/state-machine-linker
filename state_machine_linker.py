@@ -153,9 +153,11 @@ def build_fill_functions(fout, list_element_types, num_raise_for_type, path_file
     state_machine_functions = []
 
 
-    final_string = '#include "' + path_file_out + '.h"\n'
+    initial_final_string = '#include "' + path_file_out + '.h"\n'
 
-    final_string += "\n"
+    initial_final_string += "\n"
+
+    final_string = ""
 
 
     ####################################
@@ -191,6 +193,9 @@ def build_fill_functions(fout, list_element_types, num_raise_for_type, path_file
 
     final_string += "}\n\n"
 
+    bottom_final_string = final_string
+    final_string = ""
+
     ####################################
     #GENERATE INIT FUNCTIONS
     ###################################
@@ -200,13 +205,21 @@ def build_fill_functions(fout, list_element_types, num_raise_for_type, path_file
 
     num_functions_to_implement = len(functions_to_implement)
     for i in range(num_functions_to_implement):
-        final_string += "void " + functions_to_implement[i] + "(" + "){\n"
+        final_string += "void " + functions_to_implement[i] + "(device_state* state){\n"
 
-        final_string += "\t" + state_machine_functions[i] + "* sc = malloc(sizeof(" + state_machine_functions[i] + "));\n"
-        final_string += "\t" + state_machine_functions[i].lower() + "_init(sc);\n"
-        final_string += "\t" + state_machine_functions[i].lower() + "_enter(sc);\n"
+        final_string += "\t" + state_machine_functions[i] + "* sm = malloc(sizeof(" + state_machine_functions[i] + "));\n"
+        final_string += "\t" + "state->state_machine = sm;\n"
+        final_string += "\t" + state_machine_functions[i].lower() + "_init(sm);\n"
+        final_string += "\t" + state_machine_functions[i].lower() + "_enter(sm);\n"
 
         final_string += "}\n\n"
+
+    upper_final_string = final_string
+
+    #workaround, in order to change the order of the different parts of the code
+    final_string = initial_final_string
+    final_string += upper_final_string
+    final_string += bottom_final_string
 
 
     ####################################
@@ -244,13 +257,16 @@ def build_fill_functions(fout, list_element_types, num_raise_for_type, path_file
 
     fout.write(final_string)
 
-def build_header_file(fout, list_element_types, path_file_out, files_h_to_compile):
+def build_header_file(fout, list_element_types, path_file_out, files_h_to_compile, header_simulator):
     final_string = ""
 
     final_string += "#ifndef " + path_file_out.upper() + "_H\n"
     final_string += "#define " + path_file_out.upper() + "_H\n"
 
     final_string += "\n"
+
+    final_string += '#include "' + header_simulator + '"\n'
+    final_string += '#include <stdlib.h>\n'
 
     for file_h in files_h_to_compile:
         final_string += '#include "' + file_h + '"\n'
@@ -261,6 +277,8 @@ def build_header_file(fout, list_element_types, path_file_out, files_h_to_compil
     final_string += "\t" + list_element_types[0] + " = 0,\n"
     for element in list_element_types[1:]:
         final_string += "\t" + element + ",\n"
+    
+    final_string += "\t" + "NUM_OF_ELEMENTS_TYPES\n"
     final_string += "} element_type;\n"
 
     final_string += "\n"
@@ -276,14 +294,14 @@ def build_header_file(fout, list_element_types, path_file_out, files_h_to_compil
     fout.write(final_string)
 
 
-def build_files(fout, fheader, list_element_types, path_topology, list_directory_to_check, path_file_out):
+def build_files(fout, fheader, list_element_types, path_topology, list_directory_to_check, path_file_out, header_simulator):
 
     num_raise_for_type, files_c_to_compile, files_h_to_compile, list_state_machine_names = get_elements_state_machine(path_topology, list_directory_to_check)
     #num_types_for_element = get_num_types_for_element(num_raise_for_type)
 
     build_fill_functions(fout, list_element_types, num_raise_for_type, path_file_out, list_state_machine_names)
 
-    build_header_file(fheader, list_element_types, path_file_out, files_h_to_compile)
+    build_header_file(fheader, list_element_types, path_file_out, files_h_to_compile, header_simulator)
 
     return files_c_to_compile, files_h_to_compile
 
@@ -299,6 +317,11 @@ if len(sys.argv) < 3:
 else:
     path_file_out = sys.argv[2]
 
+if len(sys.argv) < 4:
+    header_simulator = "simulator_api.h"
+else:
+    header_simulator = sys.argv[3]
+
 list_element_types = ["CENTRAL", "REGIONAL", "LOCAL", "SENSOR", "ACTUATOR", "LAN"]
 list_directory_to_check = ["central/", "regional/", "local/", "sensor/", "actuator/", "lan/"]
 
@@ -307,7 +330,7 @@ list_directory_to_check = ["central/", "regional/", "local/", "sensor/", "actuat
 fout = open(path_file_out + ".c", "w")
 fheader = open(path_file_out + ".h", "w")
 
-list_files_c_to_compile, list_files_h_to_compile = build_files(fout, fheader, list_element_types, path_topology, list_directory_to_check, path_file_out)
+list_files_c_to_compile, list_files_h_to_compile = build_files(fout, fheader, list_element_types, path_topology, list_directory_to_check, path_file_out, header_simulator)
 
 fout.close()
 fheader.close()
@@ -318,15 +341,45 @@ list_files_h_to_compile.append(path_file_out+".h")
 
 
 
-print('PASSING_C="',end='')
-for file_c in list_files_c_to_compile:
-    print(file_c + " ", end="")
-print('" ', end="")
+output_string = ""
+#print(' PASSING_C="',end='')
+#output_string += 'PASSING_C="'
+output_string += list_files_c_to_compile[0]
+#print(list_files_c_to_compile[0] + " ", end="")
+for file_c in list_files_c_to_compile[1:]:
+    output_string += " " + file_c
+    #print(" " + file_c, end="")
+output_string += ' '
+#print('" ', end="")
 
-print('PASSING_H="',end="")
-for file_h in list_files_h_to_compile:
-    print(file_h + " ", end="")
-print('" ')
+fc = open("file_c.txt", "w")
+fc.write(output_string)
+fc.close()
+
+#print('PASSING_H="',end="")
+#output_string += 'PASSING_H="'
+#print(list_files_h_to_compile[0] + " ", end="")
+output_string += list_files_h_to_compile[0]
+for file_h in list_files_h_to_compile[1:]:
+    output_string += " " + file_h
+    #print(" " + file_h, end="")
+output_string += ''
+
+
+fh = open("file_h.txt", "w")
+fh.write(output_string)
+fh.close()
+
+
+#print('"', end="", flush=True)
+#print(output_string, end="", flush=True)
+#sys.stdout.write(output_string)
+
+
+#try:
+#    print(output_string, end="", flush=True)
+#except (BrokenPipeError, IOError):
+#    print ('BrokenPipeError caught', file = sys.stderr)
 
 
 

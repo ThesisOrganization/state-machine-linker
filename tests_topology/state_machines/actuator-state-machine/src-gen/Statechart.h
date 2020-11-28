@@ -21,7 +21,7 @@ typedef struct StatechartIface StatechartIface;
 }
 #endif
 
-#include "../ciao.h"
+//#include "../ciao.h"
 #include "../src/sc_types.h"
 
 #ifdef __cplusplus

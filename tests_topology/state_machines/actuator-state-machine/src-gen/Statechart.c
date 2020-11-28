@@ -223,7 +223,7 @@ void statechart_set_value(Statechart* handle, int32_t value)
 static void enact_main_region_StateA(Statechart* handle)
 {
 	/* Entry action for state 'StateA'. */
-	funzione(handle->iface.value, handle->iface.ptr);
+	//funzione(handle->iface.value, handle->iface.ptr);
 }
 
 /* 'default' enter sequence for state StateA */
@@ -291,7 +291,7 @@ static void exseq_main_region(Statechart* handle)
 static void react_main_region__entry_Default(Statechart* handle)
 {
 	/* Default react sequence for initial entry  */
-	init_values(handle->iface.value, handle->iface.ptr);
+	//init_values(handle->iface.value, handle->iface.ptr);
 	enseq_main_region_StateA_default(handle);
 }
 
