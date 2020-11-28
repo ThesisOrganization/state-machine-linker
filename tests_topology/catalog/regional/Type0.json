@@ -12,7 +12,7 @@
           "batch": 0.66,
           "reply": 1.65
         },
-        "path":"actuator-state-machine",
+        "state_machine":"",
         "cores":1,
         "prob_command_generated": 0.1,
         "scheduler_type": "1",

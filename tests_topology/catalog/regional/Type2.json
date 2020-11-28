@@ -12,7 +12,7 @@
           "batch": 0.66,
           "reply": 1.65
         },
-        "path":"prova_rapida",
+        "state_machine":"prova_rapida",
         "cores":4,
         "prob_command_generated": 0.1,
         "scheduler_type": "1",

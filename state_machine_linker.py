@@ -57,11 +57,13 @@ def get_num_types_for_element(num_raise_for_type):
 def get_elements_state_machine(path_topology, list_directory_to_check):
     path_catalog = path_topology + "catalog/"
     
-    num_types_for_element = []
+    #num_types_for_element = []
     num_raise_for_type = []
 
     files_c_to_compile = []
     files_h_to_compile = []
+
+    list_state_machine_names = []
     
     num_directory_to_check = len(list_directory_to_check)
     
@@ -74,9 +76,11 @@ def get_elements_state_machine(path_topology, list_directory_to_check):
     
         num_types_for_actual_element = len(list_files_name)
         
-        num_types_for_element.append(num_types_for_actual_element)
+        #num_types_for_element.append(num_types_for_actual_element)
     
         num_raise_for_type.append([])
+
+        list_state_machine_names.append([])
     
         for j in range(0, num_types_for_actual_element):
             path_file_type = path_files_types + list_files_name[j]
@@ -85,11 +89,14 @@ def get_elements_state_machine(path_topology, list_directory_to_check):
             fproject = open(path_file_type, "r")
     
     
+            num_raise_for_type[i].append([])
+
             json_data = json.load(fproject)
-            if "path" in json_data and json_data["path"] != "":
-                project_name = json_data["path"]
+            if "state_machine" in json_data and json_data["state_machine"] != "":
+                project_name = json_data["state_machine"]
             else:
-                break
+                list_state_machine_names[i].append("")
+                continue
             
     
             path_project = path_topology + "state_machines/" + project_name + "/"
@@ -97,6 +104,8 @@ def get_elements_state_machine(path_topology, list_directory_to_check):
             fproject.close()
     
             generated_file_name = get_string_project(path_project)
+            
+            list_state_machine_names[i].append(generated_file_name)
             
             file_to_add = path_project + "src-gen/" + generated_file_name + ".c"
             if file_to_add not in files_c_to_compile:
@@ -121,22 +130,28 @@ def get_elements_state_machine(path_topology, list_directory_to_check):
     
             num_of_events = len(list_events)
             
-            num_raise_for_type[i].append([])
     
             for k in range(0, num_of_events):
                 event = list_events[k]
                 num_raise_for_type[i][j].append(event)
 
-    return num_raise_for_type, files_c_to_compile, files_h_to_compile
+    return num_raise_for_type, files_c_to_compile, files_h_to_compile, list_state_machine_names
+
+def merge_lists(list_of_lists):
+    merge = []
+    for l in list_of_lists:
+        merge.extend(l)
+    return merge
 
 
 
-
-def build_fill_functions(fout, list_element_types, num_types_for_element, num_raise_for_type, path_file_out):
+def build_fill_functions(fout, list_element_types, num_types_for_element, num_raise_for_type, path_file_out, list_state_machine_names):
 
     num_element_types = len(list_element_types)
 
     functions_to_implement = []
+    state_machine_functions = []
+
 
     final_string = '#include "' + path_file_out + '.h"\n'
 
@@ -149,16 +164,26 @@ def build_fill_functions(fout, list_element_types, num_types_for_element, num_ra
     final_string += DECLARATION_FILL_INIT + "{\n\n"
 
     for i in range(0, num_element_types):
-        if num_types_for_element[i] == 0:
+        merged_list = merge_lists(num_raise_for_type[i])
+        if len(merged_list) == 0:
             final_string += "\tref_init_ptr[" + str(list_element_types[i]) + "] = NULL;\n"
             final_string += "\n"
             continue
 
-        final_string += "\tref_init_ptr[" + str(list_element_types[i]) + "] = malloc(sizeof( void (*)() ) * " + str(num_types_for_element[i]) + ");\n"
+        num_types = len(num_raise_for_type[i])
 
-        for j in range(0, num_types_for_element[i]):
+        final_string += "\tref_init_ptr[" + str(list_element_types[i]) + "] = malloc(sizeof( void (*)() ) * " + str(num_types) + ");\n"
+
+        for j in range(0, num_types):
+            num_raise = len(num_raise_for_type[i][j])
+            if num_raise == 0:
+                final_string += "\tref_init_ptr[" + str(list_element_types[i]) + "]" + "[" + str(j) + "]" + " = NULL;\n"
+                continue
+
             function_name = "init_" + list_element_types[i] + "_" + str(j)
             functions_to_implement.append(function_name)
+            state_machine_functions.append(list_state_machine_names[i][j])
+
             final_string += "\tref_init_ptr[" + str(list_element_types[i]) + "]" + "[" + str(j) + "]" + " = " + function_name + ";\n"
 
         final_string += "\n"
@@ -169,10 +194,17 @@ def build_fill_functions(fout, list_element_types, num_types_for_element, num_ra
     ####################################
     #GENERATE INIT FUNCTIONS
     ###################################
-    for function_name in functions_to_implement:
-        final_string += "void " + function_name + "(" + "){\n"
+    if len(functions_to_implement) != len(state_machine_functions):
+        print("ERROR: len(functions_to_implement) != len(state_machine_functions)")
+        return
 
+    num_functions_to_implement = len(functions_to_implement)
+    for i in range(num_functions_to_implement):
+        final_string += "void " + functions_to_implement[i] + "(" + "){\n"
 
+        final_string += "\t" + state_machine_functions[i] + "* sc = malloc(sizeof(" + state_machine_functions[i] + "));\n"
+        final_string += "\t" + state_machine_functions[i].lower() + "_init(sc);\n"
+        final_string += "\t" + state_machine_functions[i].lower() + "_enter(sc);\n"
 
         final_string += "}\n\n"
 
@@ -183,17 +215,25 @@ def build_fill_functions(fout, list_element_types, num_types_for_element, num_ra
     final_string += DECLARATION_FILL_RAISE + "{\n\n"
 
     for i in range(0, num_element_types):
-        if num_types_for_element[i] == 0:
+        merged_list = merge_lists(num_raise_for_type[i])
+        if len(merged_list) == 0:
             final_string += "\tref_raise_ptr[" + str(list_element_types[i]) + "] = NULL;\n"
             final_string += "\n"
             continue
+        
+        num_types = len(num_raise_for_type[i])
 
-        final_string += "\tref_raise_ptr[" + str(list_element_types[i]) + "] = malloc(sizeof( void (**)() ) * " + str(num_types_for_element[i]) + ");\n"
+        final_string += "\tref_raise_ptr[" + str(list_element_types[i]) + "] = malloc(sizeof( void (**)() ) * " + str(num_types) + ");\n"
 
-        for j in range(0, num_types_for_element[i]):
-            final_string += "\tref_raise_ptr[" + str(list_element_types[i]) + "]" + "[" + str(j) + "]" + " = malloc(sizeof( void (*)() ) * " + str(len(num_raise_for_type[i][j])) + ");\n"
+        for j in range(0, num_types):
+            num_raise = len(num_raise_for_type[i][j])
+            if num_raise == 0:
+                final_string += "\tref_raise_ptr[" + str(list_element_types[i]) + "]" + "[" + str(j) + "]" + " = NULL;\n"
+                continue
 
-            for k in range(0, len(num_raise_for_type[i][j])):
+            final_string += "\tref_raise_ptr[" + str(list_element_types[i]) + "]" + "[" + str(j) + "]" + " = malloc(sizeof( void (*)() ) * " + str(num_raise) + ");\n"
+
+            for k in range(0, num_raise):
                 final_string += "\tref_raise_ptr[" + str(list_element_types[i]) + "]" + "[" + str(j) + "]" + "[" + str(k) + "]" + " = " + num_raise_for_type[i][j][k] + ";\n"
 
         final_string += "\n"
@@ -238,10 +278,10 @@ def build_header_file(fout, list_element_types, path_file_out, files_h_to_compil
 
 def build_files(fout, fheader, list_element_types, path_topology, list_directory_to_check, path_file_out):
 
-    num_raise_for_type, files_c_to_compile, files_h_to_compile = get_elements_state_machine(path_topology, list_directory_to_check)
+    num_raise_for_type, files_c_to_compile, files_h_to_compile, list_state_machine_names = get_elements_state_machine(path_topology, list_directory_to_check)
     num_types_for_element = get_num_types_for_element(num_raise_for_type)
 
-    build_fill_functions(fout, list_element_types, num_types_for_element, num_raise_for_type, path_file_out)
+    build_fill_functions(fout, list_element_types, num_types_for_element, num_raise_for_type, path_file_out, list_state_machine_names)
 
     build_header_file(fheader, list_element_types, path_file_out, files_h_to_compile)
 
