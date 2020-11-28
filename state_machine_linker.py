@@ -10,8 +10,8 @@ list_element_types = ["CENTRAL", "REGIONAL", "LOCAL", "SENSOR", "ACTUATOR", "LAN
 string_path_topology = "test_topology/"
 string_path_catalog = string_path_topology + "catalog/"
 
-string_path1 = "prova_rapida/src-gen/"
-string_path2 = "actuator-state-machine/src-gen/"
+string_path1 = "state_machine_projects/prova_rapida/src-gen/"
+string_path2 = "state_machine_projects/actuator-state-machine/src-gen/"
 
 
 
