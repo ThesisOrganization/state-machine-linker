@@ -53,11 +53,14 @@ def get_num_types_for_element(num_raise_for_type):
 
 
 
-def get_elements_state_machine(path_topology):
+def get_elements_state_machine(path_topology, list_directory_to_check):
     path_catalog = path_topology + "catalog/"
     
     num_types_for_element = []
     num_raise_for_type = []
+
+    files_c_to_compile = []
+    files_h_to_compile = []
     
     num_directory_to_check = len(list_directory_to_check)
     
@@ -93,6 +96,18 @@ def get_elements_state_machine(path_topology):
             fproject.close()
     
             generated_file_name = get_string_project(path_project)
+            
+            file_to_add = path_project + "src-gen/" + generated_file_name + ".c"
+            if file_to_add not in files_c_to_compile:
+                files_c_to_compile.append(file_to_add)
+
+            file_to_add = path_project + "src-gen/" + generated_file_name + ".h"
+            if file_to_add not in files_h_to_compile:
+                files_h_to_compile.append(file_to_add)
+            
+            file_to_add = path_project + "src/sc_types.h"
+            if file_to_add not in files_h_to_compile:
+                files_h_to_compile.append(file_to_add)
     
             fin = open(path_project + "src-gen/" + generated_file_name + ".h", "r")
             
@@ -111,7 +126,7 @@ def get_elements_state_machine(path_topology):
                 event = list_events[k]
                 num_raise_for_type[i][j].append(event)
 
-    return num_raise_for_type
+    return num_raise_for_type, files_c_to_compile, files_h_to_compile
 
 
 
@@ -183,26 +198,61 @@ def build_fill_functions(fout, list_element_types, num_types_for_element, num_ra
 
     fout.write(final_string)
 
+def build_header_file(fout):
+    return 0
 
-def build_file_c(fout, list_element_types, path_topology):
 
-    num_raise_for_type = get_elements_state_machine(path_topology)
+def build_files(fout, fheader, list_element_types, path_topology, list_directory_to_check):
+
+    num_raise_for_type, files_c_to_compile, files_h_to_compile = get_elements_state_machine(path_topology, list_directory_to_check)
     num_types_for_element = get_num_types_for_element(num_raise_for_type)
 
     build_fill_functions(fout, list_element_types, num_types_for_element, num_raise_for_type)
 
+    build_header_file(fheader)
+
+    return files_c_to_compile, files_h_to_compile
 
 
 
+if len(sys.argv) < 2:
+    path_topology = "tests_topology/"
+else:
+    path_topology = sys.argv[1]
 
+if len(sys.argv) < 3:
+    path_file_out = "linking"
+else:
+    path_file_out = sys.argv[2]
 
 list_element_types = ["CENTRAL", "REGIONAL", "LOCAL", "SENSOR", "ACTUATOR", "LAN"]
 list_directory_to_check = ["central/", "regional/", "local/", "sensor/", "actuator/", "lan/"]
 
-path_topology = "tests_topology/"
 
-path_file_out = "linking.c"
-fout = open(path_file_out, "w")
 
-build_file_c(fout, list_element_types, path_topology)
+fout = open(path_file_out + ".c", "w")
+fheader = open(path_file_out + ".h", "w")
+
+list_files_c_to_compile, list_files_h_to_compile = build_files(fout, fheader, list_element_types, path_topology, list_directory_to_check)
+
+fout.close()
+fheader.close()
+
+
+list_files_c_to_compile.append(path_file_out+".c")
+list_files_h_to_compile.append(path_file_out+".h")
+
+
+
+print('PASSING_C="',end='')
+for file_c in list_files_c_to_compile:
+    print(file_c + " ", end="")
+print('" ', end="")
+
+print('PASSING_H="',end="")
+for file_h in list_files_h_to_compile:
+    print(file_h + " ", end="")
+print('" ')
+
+
 
