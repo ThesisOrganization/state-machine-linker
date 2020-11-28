@@ -17,43 +17,6 @@ void funzione2(int intero, int value){
 void (** init_ptr[NUM_OF_ELEMENTS_TYPES])();
 void (*** raise_ptr[NUM_OF_ELEMENTS_TYPES])();
 
-/*
-typedef enum _element_type{
-    CENTRAL = 0,
-	REGIONAL,
-	LOCAL,
-	SENSOR,
-	ACTUATOR,
-	LAN,
-    NUM_OF_ELEMENTS_TYPES
-} element_type;
-
-
-
-#define NUM_TYPES_FOR_CENTRAL 2
-#define NUM_RAISE_FOR_TYPE0 1
-#define NUM_RAISE_FOR_TYPE1 1
-
-void fill_init_ptr( void(*** ref_init_ptr)() ){
-
-    ref_init_ptr[CENTRAL] = malloc(sizeof( void (*)() ) * NUM_TYPES_FOR_CENTRAL);
-    ref_init_ptr[CENTRAL][0] = funzione1;
-    ref_init_ptr[CENTRAL][1] = funzione2;
-
-}
-
-void fill_raise_ptr( void(**** ref_raise_ptr)() ){
-
-    ref_raise_ptr[CENTRAL] = malloc(sizeof( void (**)() ) * NUM_TYPES_FOR_CENTRAL);
-    ref_raise_ptr[CENTRAL][0] = malloc(sizeof( void (*)() ) * NUM_RAISE_FOR_TYPE0);
-    ref_raise_ptr[CENTRAL][1] = malloc(sizeof( void (*)() ) * NUM_RAISE_FOR_TYPE1);
-
-    ref_raise_ptr[CENTRAL][0][0] = funzione1;
-    ref_raise_ptr[CENTRAL][1][0] = funzione2;
-
-}
-
-*/
 
 
 int main(){
@@ -62,16 +25,23 @@ int main(){
     fill_init_ptr(init_ptr);
     fill_raise_ptr(raise_ptr);
 
-    //int type0 = 0;
-    //int type1 = 1;
-    //
-    //init_ptr[CENTRAL][type0](3, 4);
-    //init_ptr[CENTRAL][type1](2, 8);
+    device_state ds1;
+    device_state ds2;
+    device_state ds3;
 
-    //int event0 = 0;
+    init_ptr[REGIONAL][1](&ds1);
+    init_ptr[REGIONAL][2](&ds2);
+    init_ptr[ACTUATOR][0](&ds3);
 
-    //raise_ptr[CENTRAL][type0][event0](8, 9);
-    //raise_ptr[CENTRAL][type1][event0](1, 6);
+    raise_ptr[REGIONAL][1][0](ds1.state_machine);
+    printf("%d\n", statechart_is_state_active(ds1.state_machine, Statechart_main_region_StateB));
+    raise_ptr[REGIONAL][1][0](ds1.state_machine);
+    printf("%d\n", statechart_is_state_active(ds1.state_machine, Statechart_main_region_StateB));
+    
+    raise_ptr[REGIONAL][2][0](ds2.state_machine);
+    printf("%d\n", statechart_is_state_active(ds2.state_machine, Statechart_main_region_StateB));
+
+    raise_ptr[ACTUATOR][0][0](ds3.state_machine);
 
 
 }
