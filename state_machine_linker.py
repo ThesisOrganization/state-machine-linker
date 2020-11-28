@@ -47,7 +47,7 @@ def build_regex(string_project):
     return string_regex
 
 def clean_string(string, string_project):
-    return string.strip().strip(string_project)[1:]
+    return string.strip().replace(string_project + "_", "")
 
 def get_events_names(string, string_project):
     types_list = string.split(",\n")[1:]
@@ -60,6 +60,10 @@ def get_list_events(string_project, full_file2):
     final = re.findall(string_regex, full_file2)
     events_names = get_events_names(final[0][0], string_project)
     return events_names
+
+def build_function_names(events_names, string_project):
+    return [string_project.lower() + "_raise_" + x for x in events_names]
+
 
 def build_fill_functions(fout, list_element_types, num_types_for_element, num_raise_for_type, string_project):
 
@@ -118,7 +122,10 @@ def build_fill_functions(fout, list_element_types, num_types_for_element, num_ra
 
 
 def build_file_c(fout, events_names, list_element_types, string_project):
-    build_fill_functions(fout, list_element_types, [1, 2, 1, 2, 3, 5], [["raise0"], ["raise0", "raise1"], ["raise0"], ["raise0", "raise1"], ["raise0", "raise1", "raise2"], ["raise0", "raise1", "raise2", "raise3", "raise4"]], string_project)
+    num_types_for_element = [1, 2, 1, 2, 3, 5]
+    #questa lista è sbagliata. Dovrebbe essere una lista di funzioni per ogni tipo (una lista di liste di liste di nomi-funzione), non una lista di un numero pari al numero di tipi per elemento 
+    num_raise_for_type = [["raise0"], ["raise0", "raise1"], ["raise0"], ["raise0", "raise1"], ["raise0", "raise1", "raise2"], ["raise0", "raise1", "raise2", "raise3", "raise4"]]
+    build_fill_functions(fout, list_element_types, num_types_for_element, num_raise_for_type, string_project)
 
 
 
@@ -141,9 +148,11 @@ def build_file_c(fout, events_names, list_element_types, string_project):
 
 events_names = get_list_events(string_project2, full_file2)
 
+print(build_function_names(events_names, string_project2))
+
 path_file_out = "linking.c"
 fout = open(path_file_out, "w")
 
 build_file_c(fout, events_names, list_element_types, string_project2)
 
-print(events_names)
+#print(events_names)

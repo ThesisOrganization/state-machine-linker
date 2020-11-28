@@ -1,6 +1,7 @@
 *.o
 driver
 linking.c
+linking.h
 .cproject
 .project
 .settings/language.settings.xml
