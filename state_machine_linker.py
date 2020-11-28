@@ -1,22 +1,35 @@
 import re
 import os
 import json
+import sys
 
 
 list_element_types = ["CENTRAL", "REGIONAL", "LOCAL", "SENSOR", "ACTUATOR", "LAN"]
+list_directory_to_check = ["actuator/", "central/", "local/", "regional/", "sensor/", "lan/"]
 
 
 
-string_path_topology = "test_topology/"
+string_path_topology = "tests_topology/"
 string_path_catalog = string_path_topology + "catalog/"
 
-string_path1 = "state_machine_projects/prova_rapida/src-gen/"
-string_path2 = "state_machine_projects/actuator-state-machine/src-gen/"
+for directory in list_directory_to_check:
+    path = string_path_catalog + directory
+
+    list_files_name = os.listdir(path)
+    list_files_name.sort()
+    print(list_files_name)
+
+
+string_path1 = "tests_topology/state_machines/prova_rapida/src-gen/"
+string_path2 = "tests_topology/state_machines/actuator-state-machine/src-gen/"
 
 
 
 list_files_name1 = os.listdir(string_path1)
 list_files_name2 = os.listdir(string_path2)
+
+#print(list_files_name1)
+#print(list_files_name2)
 
 string_project1 = list_files_name1[0][:-2]
 string_project2 = list_files_name2[0][:-2]
