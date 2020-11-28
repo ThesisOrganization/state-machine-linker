@@ -3,7 +3,8 @@ import os
 import json
 import sys
 
-
+DECLARATION_FILL_INIT = "void fill_init_ptr( void(*** ref_init_ptr)() )"
+DECLARATION_FILL_RAISE = "void fill_raise_ptr( void(**** ref_raise_ptr)() )"
 
 
 def build_regex(string_project):
@@ -131,19 +132,21 @@ def get_elements_state_machine(path_topology, list_directory_to_check):
 
 
 
-def build_fill_functions(fout, list_element_types, num_types_for_element, num_raise_for_type):
+def build_fill_functions(fout, list_element_types, num_types_for_element, num_raise_for_type, path_file_out):
 
     num_element_types = len(list_element_types)
 
     functions_to_implement = []
 
-    final_string = ""
+    final_string = '#include "' + path_file_out + '.h"\n'
+
+    final_string += "\n"
 
 
     ####################################
     #GENERATE FILL INIT PTR
     ###################################
-    final_string += "void fill_init_ptr( void(*** ref_init_ptr)() ){\n\n"
+    final_string += DECLARATION_FILL_INIT + "{\n\n"
 
     for i in range(0, num_element_types):
         if num_types_for_element[i] == 0:
@@ -168,13 +171,16 @@ def build_fill_functions(fout, list_element_types, num_types_for_element, num_ra
     ###################################
     for function_name in functions_to_implement:
         final_string += "void " + function_name + "(" + "){\n"
+
+
+
         final_string += "}\n\n"
 
 
     ####################################
     #GENERATE FILL RAISE PTR
     ###################################
-    final_string += "void fill_raise_ptr( void(**** ref_raise_ptr)() ){\n\n"
+    final_string += DECLARATION_FILL_RAISE + "{\n\n"
 
     for i in range(0, num_element_types):
         if num_types_for_element[i] == 0:
@@ -198,18 +204,46 @@ def build_fill_functions(fout, list_element_types, num_types_for_element, num_ra
 
     fout.write(final_string)
 
-def build_header_file(fout):
-    return 0
+def build_header_file(fout, list_element_types, path_file_out, files_h_to_compile):
+    final_string = ""
+
+    final_string += "#ifndef " + path_file_out.upper() + "_H\n"
+    final_string += "#define " + path_file_out.upper() + "_H\n"
+
+    final_string += "\n"
+
+    for file_h in files_h_to_compile:
+        final_string += '#include "' + file_h + '"\n'
+
+    final_string += "\n"
+
+    final_string += "typedef enum _element_type{\n"
+    final_string += "\t" + list_element_types[0] + " = 0,\n"
+    for element in list_element_types[1:]:
+        final_string += "\t" + element + ",\n"
+    final_string += "} element_type;\n"
+
+    final_string += "\n"
+
+    final_string += DECLARATION_FILL_INIT + ";\n"
+
+    final_string += DECLARATION_FILL_RAISE + ";\n"
+
+    final_string += "\n"
+
+    final_string += "#endif /* " + path_file_out.upper() + "_H */\n"
+
+    fout.write(final_string)
 
 
-def build_files(fout, fheader, list_element_types, path_topology, list_directory_to_check):
+def build_files(fout, fheader, list_element_types, path_topology, list_directory_to_check, path_file_out):
 
     num_raise_for_type, files_c_to_compile, files_h_to_compile = get_elements_state_machine(path_topology, list_directory_to_check)
     num_types_for_element = get_num_types_for_element(num_raise_for_type)
 
-    build_fill_functions(fout, list_element_types, num_types_for_element, num_raise_for_type)
+    build_fill_functions(fout, list_element_types, num_types_for_element, num_raise_for_type, path_file_out)
 
-    build_header_file(fheader)
+    build_header_file(fheader, list_element_types, path_file_out, files_h_to_compile)
 
     return files_c_to_compile, files_h_to_compile
 
@@ -233,7 +267,7 @@ list_directory_to_check = ["central/", "regional/", "local/", "sensor/", "actuat
 fout = open(path_file_out + ".c", "w")
 fheader = open(path_file_out + ".h", "w")
 
-list_files_c_to_compile, list_files_h_to_compile = build_files(fout, fheader, list_element_types, path_topology, list_directory_to_check)
+list_files_c_to_compile, list_files_h_to_compile = build_files(fout, fheader, list_element_types, path_topology, list_directory_to_check, path_file_out)
 
 fout.close()
 fheader.close()
