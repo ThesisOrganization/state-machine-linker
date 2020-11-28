@@ -3,6 +3,6 @@
         "rate_trans_act": 0.0042,
         "measure_type": "0",
         "job_type": "BATCH",
-        "path":"../../state_machines/prova_rapida/",
+        "path":"prova_rapida",
         "weight": 0.4
 }
