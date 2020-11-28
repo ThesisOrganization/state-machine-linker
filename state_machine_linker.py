@@ -113,46 +113,6 @@ def get_elements_state_machine(path_topology):
 
     return num_raise_for_type
 
-#num_raise_for_type = get_elements_state_machine(path_topology)
-#num_types_for_element = get_num_types_for_element(num_raise_for_type)
-#
-#print(num_types_for_element)
-#print(num_raise_for_type)
-
-
-
-#[[["raise0", "raise1"]], [["raise0", "raise1"], ["raise0", "raise1"]], [["raise0"]], [["raise0", "raise1"], ["raise0"]], [["raise0", "raise1", "raise2"], ["raise0"], ["raise0"]], [["raise0", "raise1", "raise2", "raise3", "raise4"], ["raise0"], ["raise0"], ["raise0"], ["raise0"]]]
-'''
-string_path1 = "tests_topology/state_machines/prova_rapida/src-gen/"
-string_path2 = "tests_topology/state_machines/actuator-state-machine/src-gen/"
-
-
-
-list_files_name1 = os.listdir(string_path1)
-list_files_name2 = os.listdir(string_path2)
-
-#print(list_files_name1)
-#print(list_files_name2)
-
-string_project1 = list_files_name1[0][:-2]
-string_project2 = list_files_name2[0][:-2]
-
-#print(string_project1)
-#print(string_project2)
-
-
-#string_project1 = "Nomemio"
-#string_project2 = "Statechart"
-
-file1 = open(string_path1 + string_project1 + ".h", "r")
-file2 = open(string_path2 + string_project2 + ".h", "r")
-
-full_file1 = file1.read()
-full_file2 = file2.read()
-'''
-
-
-#print(string_regex)
 
 
 
@@ -226,9 +186,6 @@ def build_fill_functions(fout, list_element_types, num_types_for_element, num_ra
 
 def build_file_c(fout, list_element_types, path_topology):
 
-    #num_types_for_element = [1, 2, 1, 2, 3, 5]
-    #num_raise_for_type = [[["raise0", "raise1"]], [["raise0", "raise1"], ["raise0", "raise1"]], [["raise0"]], [["raise0", "raise1"], ["raise0"]], [["raise0", "raise1", "raise2"], ["raise0"], ["raise0"]], [["raise0", "raise1", "raise2", "raise3", "raise4"], ["raise0"], ["raise0"], ["raise0"], ["raise0"]]]
-    #num_raise_for_type = build_function_names(num_raise_for_type, string_project)
     num_raise_for_type = get_elements_state_machine(path_topology)
     num_types_for_element = get_num_types_for_element(num_raise_for_type)
 
@@ -238,24 +195,6 @@ def build_file_c(fout, list_element_types, path_topology):
 
 
 
-#string_regex = build_regex(string_project2)
-
-#final = re.search(string_regex, full_file1)
-#final = re.findall(string_regex, full_file2)
-
-
-#print(full_file1)
-
-#print(final)
-#print(len(final[0]))
-
-#print(final[0][0])
-
-#print(get_events_names(final[0][0], string_project2))
-
-#events_names = get_list_events(string_project2, full_file2)
-
-#print(build_function_names(events_names, string_project2))
 
 list_element_types = ["CENTRAL", "REGIONAL", "LOCAL", "SENSOR", "ACTUATOR", "LAN"]
 list_directory_to_check = ["central/", "regional/", "local/", "sensor/", "actuator/", "lan/"]
@@ -267,4 +206,3 @@ fout = open(path_file_out, "w")
 
 build_file_c(fout, list_element_types, path_topology)
 
-#print(events_names)
