@@ -351,12 +351,12 @@ output_string += list_files_c_to_compile[0]
 for file_c in list_files_c_to_compile[1:]:
     output_string += " " + file_c
     #print(" " + file_c, end="")
-output_string += ' '
+output_string += '|'
 #print('" ', end="")
 
-fc = open("file_c.txt", "w")
-fc.write(output_string)
-fc.close()
+#fc = open("file_c.txt", "w")
+#fc.write(output_string)
+#fc.close()
 
 #print('PASSING_H="',end="")
 #output_string += 'PASSING_H="'
@@ -368,9 +368,10 @@ for file_h in list_files_h_to_compile[1:]:
 output_string += ''
 
 
-fh = open("file_h.txt", "w")
-fh.write(output_string)
-fh.close()
+
+#fh = open("file_h.txt", "w")
+#fh.write(output_string)
+#fh.close()
 
 
 #print('"', end="", flush=True)
@@ -378,10 +379,10 @@ fh.close()
 #sys.stdout.write(output_string)
 
 
-#try:
-#    print(output_string, end="", flush=True)
-#except (BrokenPipeError, IOError):
-#    print ('BrokenPipeError caught', file = sys.stderr)
+try:
+    print(output_string, end="", flush=True)
+except (BrokenPipeError, IOError):
+    print ('BrokenPipeError caught', file = sys.stderr)
 
 
 
