@@ -12,7 +12,7 @@ PASSING_H =
 SRCS = driver.c simulator_api.c $(PASSING_C)
 OBJS = $(SRCS:.c=.o)
 
-DEPS= simulator_api.h $(PASSING_H)
+DEPS= application_datatypes.h simulator_api.h $(PASSING_H)
 
 .PHONY: clean
 

@@ -223,7 +223,7 @@ void statechart_set_value(Statechart* handle, int32_t value)
 static void enact_main_region_StateA(Statechart* handle)
 {
 	/* Entry action for state 'StateA'. */
-	//funzione(handle->iface.value, handle->iface.ptr);
+    funzione_stampa(56);
 }
 
 /* 'default' enter sequence for state StateA */

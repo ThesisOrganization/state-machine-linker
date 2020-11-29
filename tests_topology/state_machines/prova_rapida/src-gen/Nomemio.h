@@ -22,6 +22,7 @@ typedef struct NomemioIface NomemioIface;
 #endif
 
 #include "../src/sc_types.h"
+#include "../simulator_api.h"
 
 #ifdef __cplusplus
 extern "C" { 

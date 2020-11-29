@@ -6,6 +6,8 @@ import sys
 DECLARATION_FILL_INIT = "void fill_init_ptr( void(*** ref_init_ptr)() )"
 DECLARATION_FILL_RAISE = "void fill_raise_ptr( void(**** ref_raise_ptr)() )"
 
+HEADER_FILE_API = "simulator_api.h"
+
 
 def build_regex(string_project):
     start_string = "typedef enum  {\n"
@@ -265,8 +267,8 @@ def build_header_file(fout, list_element_types, path_file_out, files_h_to_compil
 
     final_string += "\n"
 
-    final_string += '#include "' + header_simulator + '"\n'
     final_string += '#include <stdlib.h>\n'
+    final_string += '#include "' + header_simulator + '"\n'
 
     for file_h in files_h_to_compile:
         final_string += '#include "' + file_h + '"\n'
@@ -318,7 +320,7 @@ else:
     path_file_out = sys.argv[2]
 
 if len(sys.argv) < 4:
-    header_simulator = "simulator_api.h"
+    header_simulator = "application_datatypes.h"
 else:
     header_simulator = sys.argv[3]
 
