@@ -3,13 +3,8 @@
 #include "linking.h"
 
 
-void funzione1(int intero, int value){
-    printf("FUNZIONE1\n");
-    printf("%d %d\n", intero, value);
-}
-void funzione2(int intero, int value){
-    printf("FUNZIONE2\n");
-    printf("%d %d\n", intero, value);
+void funzione_di_prova(int* intero){
+    printf("valore: %d\n", *intero);
 }
 
 //void (* global_ptr[7][2])();
@@ -20,6 +15,11 @@ void (*** raise_ptr[NUM_OF_ELEMENTS_TYPES])();
 
 
 int main(){
+
+    int numero = 5;
+
+    void* ptr = &numero;
+    funzione_di_prova(ptr);
 
 
     fill_init_ptr(init_ptr);
