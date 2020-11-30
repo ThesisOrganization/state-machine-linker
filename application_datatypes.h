@@ -7,6 +7,10 @@
 typedef struct _device_state {
 	int num_acts_types;
 	double * prob_actuators;
+    //info not visible by user but used but the APIS
+    void* info_job; //should be the job_info
+    double now;
+    //end
     void* state_machine;
 } device_state;
 

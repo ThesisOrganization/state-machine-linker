@@ -5,6 +5,7 @@
 
 
 void funzione_stampa(int intero);
+void send_msg(void* state);
 
 
 #endif /* SIMULATOR_API_H */

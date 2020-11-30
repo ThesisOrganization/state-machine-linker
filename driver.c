@@ -30,6 +30,11 @@ int main(){
     device_state ds3;
     device_state ds4;
 
+    ds1.num_acts_types = 1;
+    ds2.num_acts_types = 2;
+    ds3.num_acts_types = 3;
+    ds4.num_acts_types = 4;
+
     init_ptr[REGIONAL][1](&ds1);
     init_ptr[REGIONAL][2](&ds2);
     init_ptr[ACTUATOR][0](&ds3);
