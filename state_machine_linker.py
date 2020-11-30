@@ -212,7 +212,7 @@ def build_fill_functions(fout, list_element_types, num_raise_for_type, path_file
         final_string += "\t" + state_machine_functions[i].capitalize() + "* sm = malloc(sizeof(" + state_machine_functions[i].capitalize() + "));\n"
         final_string += "\t" + "state->state_machine = sm;\n"
         final_string += "\t" + state_machine_functions[i].lower() + "_init(sm);\n"
-        final_string += "\t//" + state_machine_functions[i].lower() + "_set_state(sm, state);\n"
+        final_string += "\t" + state_machine_functions[i].lower() + "_set_state(sm, state);\n"
         final_string += "\t" + state_machine_functions[i].lower() + "_enter(sm);\n"
 
         final_string += "}\n\n"

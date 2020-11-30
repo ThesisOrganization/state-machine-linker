@@ -10,6 +10,6 @@ void funzione_stampa(int intero){
 void send_msg(void* state){
 
     device_state* ds = (device_state*) state;
-    printf("Num acts types= %d", ds->num_acts_types);
+    printf("Num acts types= %d\n", ds->num_acts_types);
 
 }

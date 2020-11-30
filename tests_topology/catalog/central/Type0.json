@@ -13,7 +13,7 @@
           "reply": 0.165
         },
         "cores":1,
-        "state_machine":"nuova_state_machine",
+        "state_machine":"",
         "delay_upper_router": 0.3,
         "delay_lower_router": 0.1,
         "prob_command_generated": 0.1,
