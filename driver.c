@@ -28,10 +28,12 @@ int main(){
     device_state ds1;
     device_state ds2;
     device_state ds3;
+    device_state ds4;
 
     init_ptr[REGIONAL][1](&ds1);
     init_ptr[REGIONAL][2](&ds2);
     init_ptr[ACTUATOR][0](&ds3);
+    init_ptr[CENTRAL][0](&ds4);
 
     raise_ptr[REGIONAL][1][0](ds1.state_machine);
     printf("%d\n", statechart_is_state_active(ds1.state_machine, Statechart_main_region_StateB));
@@ -42,6 +44,10 @@ int main(){
     printf("%d\n", statechart_is_state_active(ds2.state_machine, Statechart_main_region_StateB));
 
     raise_ptr[ACTUATOR][0][0](ds3.state_machine);
+
+    raise_ptr[CENTRAL][0][0](ds4.state_machine);
+
+
 
 
 }

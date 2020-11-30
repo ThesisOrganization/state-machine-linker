@@ -11,14 +11,14 @@ HEADER_FILE_API = "simulator_api.h"
 
 def build_regex(string_project):
     start_string = "typedef enum  {\n"
-    end_string = "\n} " + string_project + "EventID;"
+    end_string = "\n} " + string_project.capitalize() + "EventID;"
     
     string_regex = start_string + "((.|\n)*)" + end_string
 
     return string_regex
 
 def clean_string(string, string_project):
-    return string.strip().replace(string_project + "_", "")
+    return string.strip().replace(string_project.capitalize() + "_", "")
 
 def get_events_names(string, string_project):
     types_list = string.split(",\n")[1:]
@@ -209,7 +209,7 @@ def build_fill_functions(fout, list_element_types, num_raise_for_type, path_file
     for i in range(num_functions_to_implement):
         final_string += "void " + functions_to_implement[i] + "(device_state* state){\n"
 
-        final_string += "\t" + state_machine_functions[i] + "* sm = malloc(sizeof(" + state_machine_functions[i] + "));\n"
+        final_string += "\t" + state_machine_functions[i].capitalize() + "* sm = malloc(sizeof(" + state_machine_functions[i].capitalize() + "));\n"
         final_string += "\t" + "state->state_machine = sm;\n"
         final_string += "\t" + state_machine_functions[i].lower() + "_init(sm);\n"
         final_string += "\t" + state_machine_functions[i].lower() + "_enter(sm);\n"
